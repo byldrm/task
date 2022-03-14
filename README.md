@@ -1,5 +1,8 @@
 # task
 
+
+Docker Desktop uygulaması açın.
+
 Aşıdaki satırları sırayla komut satırında çalıştırın.
 
     git clone https://github.com/byldrm/task.git
