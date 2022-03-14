@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseController as BaseController;
 use App\Http\Resources\UserListResource;
 use App\Models\UserList;
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
-class UserListController extends Controller
+class UserListController extends BaseController
 {
 
     private $apis = [
@@ -29,12 +29,11 @@ class UserListController extends Controller
             $data = Cache::get('userList');
         }else{
             $data = UserList::all();
-            Cache::put('userList', $data, 5);
+            Cache::put('userList', $data, 600);
         }
 
-        return response([ 'users' =>
-            UserListResource::collection($data),
-            'message' => 'Successful'], 200);
+        return $this->sendResponse(UserListResource::collection($data), 'Successful');
+
     }
 
     /**
@@ -61,15 +60,17 @@ class UserListController extends Controller
         ]);
 
         if($validator->fails()){
-            return response(['error' => $validator->errors(),
-                'Validation Error']);
+            return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        $user = UserList::create($data);
+        $user = UserList::updateOrCreate(
+            ['api_name'=>$data['api_name'],'api_id'=>$data['api_id']],
+            ['name'=>$data['name']]
+        );
 
-        return response([ 'user' => new
-        UserListResource($user),
-            'message' => 'Kullanıcı Başarıyla Kaydedildi'], 200);
+        Cache::put('userList', UserList::all(), 600);
+        return $this->sendResponse(new UserListResource($user), 'Successful');
+
     }
 
     /**
@@ -119,9 +120,8 @@ class UserListController extends Controller
 
     public function api_list()
     {
-        return response([ 'apis' =>
-            $this->apis,
-            'message' => 'Successful'], 200);
+        return $this->sendResponse($this->apis, 'Successful');
+
     }
 
     public function get_users_from_api(Request $request)
@@ -138,12 +138,12 @@ class UserListController extends Controller
             $users = array_map(function($user_data) {
                 return (object) array(
                     'name' => $user_data->first_name.' '.$user_data->last_name,
+                    'id'=>$user_data->id
                 );
             }, $users_data);
         }
 
-        return response([ 'users' =>
-            $users,
-            'message' => 'Successful'], 200);
+        return $this->sendResponse($users, 'Successful');
+
     }
 }

@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('user_lists', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('api_name');
+            $table->integer('api_id');
             $table->timestamps();
         });
     }

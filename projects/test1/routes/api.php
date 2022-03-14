@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\LoginController;
 use App\Http\Controllers\Api\UserListController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::apiResource('/user_list',UserListController::class);
-Route::get('/api_list',[UserListController::class,'api_list']);
-Route::post('/get_users_from_api',[UserListController::class,'get_users_from_api']);
+Route::controller(LoginController::class)->group(function(){
+    Route::post('register', 'register');
+    Route::post('login', 'login');
+});
+
+Route::middleware('auth:sanctum')->group( function () {
+    Route::apiResource('/user_list',UserListController::class);
+    Route::get('/api_list',[UserListController::class,'api_list']);
+    Route::post('/get_users_from_api',[UserListController::class,'get_users_from_api']);
+});
+

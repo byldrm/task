@@ -14,33 +14,41 @@ class UserListController extends Controller
         return $this->api_url.$endpoint;
     }
 
+    public function get_data($endpoint,$data=[],$method ='get')
+    {
+        $access_token =  Session('UsersData')->token;
+        $result = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer '.$access_token,
+        ])->$method($this->get_url($endpoint),$data);
+
+        return json_decode($result);
+    }
+
     public function index()
     {
-        $apis = Http::get($this->get_url('api_list'));
-        return view('index',['apis'=>json_decode($apis)->apis]);
+        $apis = $this->get_data('api_list');
+        return view('dashboard',['apis'=>$apis]);
     }
 
     public function get_users_from_api(Request $request)
     {
-
-        $response = Http::post( $this->get_url('get_users_from_api'), [
-            'api' => $request->api,
-        ]);
-        $view = view('get_user_list_from_api')->with(['users'=> json_decode($response->getBody())->users])->render();
+        $data =  ['api' => $request->api];
+        $response = $this->get_data('get_users_from_api',$data,'post');
+        $view = view('get_user_list_from_api')->with(['users'=>$response->data,'api_name'=>$request->api])->render();
         return response()->json($view);
     }
 
     public function user_save(Request $request)
     {
-        $response = Http::post( $this->get_url('user_list'), [
-            'name' => $request->name,
-        ]);
-        return redirect()->back()->with('success', json_decode($response->getBody())->message);
+        $data = ['name' => $request->name,'api_name'=>$request->api_name,'api_id'=>$request->api_id];
+        $response = $this->get_data('user_list',$data,'post');
+        return redirect()->back()->with('success',$response->message);
     }
 
     public function user_list()
     {
-        $data = Http::get($this->get_url('user_list'));
-        return view('user_list',['users'=>json_decode($data)->users]);
+        $data = $this->get_data('user_list');
+        return view('user_list',['users'=>$data->data]);
     }
 }

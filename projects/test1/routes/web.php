@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserListController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,8 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //pull_users_from_api
+Route::get('login',[LoginController::class,'login'])->name('login');
+Route::get('logout',[LoginController::class,'logout'])->name('logout');
+Route::post('login',[LoginController::class,'login_post'])->name('login_post');
 
-Route::get('/',[UserListController::class,'index'])->name('index');
-Route::post('get_users_from_api',[UserListController::class,'get_users_from_api'])->name('get_users_from_api');
-Route::post('user_save',[UserListController::class,'user_save'])->name('user_save');
-Route::get('user_list',[UserListController::class,'user_list'])->name('user_list');
+Route::middleware('checkaccesstoken')->group( function () {
+    Route::get('/',[UserListController::class,'index'])->name('dashboard');
+    Route::post('get_users_from_api',[UserListController::class,'get_users_from_api'])->name('get_users_from_api');
+    Route::post('user_save',[UserListController::class,'user_save'])->name('user_save');
+    Route::get('user_list',[UserListController::class,'user_list'])->name('user_list');
+});
