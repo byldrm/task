@@ -37,6 +37,9 @@ services:
     container_name: app-shared-mysql
     ports:
       - "3306:3306"
+    command: --init-file /data/application/init.sql
+    volumes:
+      - ./docker/mysql/init.sql:/data/application/init.sql
     depends_on:
       - php8
     environment:
