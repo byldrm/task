@@ -33,12 +33,12 @@
             <li class="nav-item">
 
                 <a class="nav-link" href="#" role="button">
-                    {{ cache('UsersData')->name }}
+                    {{ session('UsersData')->name }}
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{route('logout')}}" role="button">
-                   Çıkış Yap
+                    Çıkış Yap
                 </a>
             </li>
         </ul>
@@ -54,7 +54,7 @@
             <!-- Sidebar user (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="info">
-                    <a href="#" class="d-block"> {{ cache('UsersData')->name }}</a>
+                    <a href="#" class="d-block"> {{ session('UsersData')->name }}</a>
                 </div>
             </div>
 

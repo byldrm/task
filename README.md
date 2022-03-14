@@ -8,7 +8,7 @@ Aşıdaki satırları sırayla komut satırında çalıştırın.
     
     docker compose up -d --build
     
-    docker exec -it app-shared-php-8 bash
+    docker exec -it app-shared-php8 bash
     
     cd test1
     
